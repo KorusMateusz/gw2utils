@@ -1,9 +1,9 @@
 #!/bin/bash
+#set -x
 
 ## Configuration
 API_KEY="your_api_key_here"  # Replace with your actual API key
 CHARACTER_NAME="Character Name"  # Replace with your character's name
-ACCOUNT_NAME="Account.1234"  # Replace with your account name
 
 ## Functions
 get_json() {
@@ -29,10 +29,10 @@ get_upgrade_price() {
 # Get character inventory
 inventory=$(get_json GET "https://api.guildwars2.com/v2/characters/$CHARACTER_NAME/inventory")
 
-# Filter for exotic items with upgrades
-exotic_items=$(echo "$inventory" | jq '.[] | select(.binding == "Account" and .stats.type == "Exotic" and .upgrades)')
+# Filter for items with upgrades
+items=$(echo "$inventory" | jq -c '.bags[].inventory | .[] | select(has("binding") | not) | select(.upgrades)')
 
-# Loop through exotic items
+# Loop through items
 echo "Item,Upgrade,Item Price,Upgrade Price,Price Difference"
 while read -r item; do
     item_id=$(echo "$item" | jq -r '.id')
@@ -49,4 +49,4 @@ while read -r item; do
 
         echo "$item_name,$upgrade_name,$item_price,$upgrade_price,$price_diff"
     done
-done <<< "$exotic_items" | sort -k5,5nr
+done <<< "$items" | sort -t, -k5
