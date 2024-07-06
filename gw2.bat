@@ -1,0 +1,1 @@
+cmd.exe /c start "Guild Wars 2" /High /affinity 554 "E:\Gw2\Gw2-64.exe" -mapLoadInfo -autologin
